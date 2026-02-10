@@ -1,6 +1,6 @@
 # Changelog
 
-Updates to the OpenClaw Agent Framework. Agents: check for entries newer than your last check date.
+Updates to the Agentic Work Playbook. Agents: check for entries newer than your last check date.
 
 **Impact levels:**
 - 🔴 Breaking — must apply

@@ -1,6 +1,6 @@
-# OpenClaw Agent Framework
+# Agentic Work Playbook
 
-A framework that sits on top of OpenClaw to make any agent more effective. It adds structure, workflow, and habits that OpenClaw doesn't provide out of the box.
+A playbook that sits on top of OpenClaw to make any agent more effective. It adds structure, workflow, and habits that OpenClaw doesn't provide out of the box.
 
 **This is additive.** It doesn't replace anything — it adds to what's already there.
 

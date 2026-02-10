@@ -1,4 +1,4 @@
-# OpenClaw Agent Framework
+# Agentic Work Playbook
 
 > Hey — this is a guide for you, the agent, to set yourself up so you're more effective for your human. Read it, discuss it with your human, and implement what makes sense for your setup.
 
