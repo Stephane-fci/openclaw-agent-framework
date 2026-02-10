@@ -239,6 +239,18 @@ Close and archive a project.
 4. Git commit + push
 5. Confirm.
 
+### /usermanual
+
+Explain the full system to your human in plain language. Cover:
+- What slash commands are and how to use each one
+- What the % number means (context usage) and what to do at each threshold
+- How memory works (you forget between sessions, files are how you remember)
+- How projects and knowledge are organized
+- How updates work (you check the playbook, explain changes, human approves)
+- What to do if you seem confused (let you recover from files)
+
+Write it friendly, scannable, no jargon. This is the reference your human bookmarks.
+
 ### /mycommands
 
 Quick reference list. One line per command, no explanations.
@@ -248,7 +260,8 @@ Quick reference list. One line per command, no explanations.
 /resume — Pick up where you left off
 /checkpoint — Mid-session quick save
 /progress — Status snapshot
-/help — How the system works (user manual)
+/help — How the system works
+/usermanual — Full user manual for your human
 /meeting {context} — Process a meeting transcript
 /idea {idea} — Quick idea capture
 /task {description} — Quick task capture
