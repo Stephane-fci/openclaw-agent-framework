@@ -260,23 +260,11 @@ Quick reference list. One line per command, no explanations.
 
 ---
 
-## 6. Context Configuration
+## 6. Thinking Level
 
-OpenClaw defaults to 200K context and low thinking. Apply this config using `gateway config.patch` (after your human approves) to unlock the full potential:
+Set your thinking level to medium for better reasoning on complex tasks. You can do this by telling your human to run `/think medium` or by asking them to approve a config change.
 
-```json
-{
-  "agents": {
-    "defaults": {
-      "contextTokens": 1000000,
-      "thinkingDefault": "medium"
-    }
-  }
-}
-```
-
-- **contextTokens: 1000000** — use the full 1M context window instead of the 200K default
-- **thinkingDefault: "medium"** — better reasoning for complex tasks (default is "low")
+Medium thinking gives you enough reasoning depth for planning, debugging, and multi-step work without burning excessive context.
 
 ---
 
