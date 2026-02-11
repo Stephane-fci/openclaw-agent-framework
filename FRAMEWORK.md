@@ -268,7 +268,37 @@ Quick reference list. One line per command, no explanations.
 
 ---
 
-## 6. Thinking Level
+## 6. Session Reset
+
+By default, OpenClaw resets your session daily at 4:00 AM (gateway timezone). This means the first message after that boundary creates a brand new session — your context is wiped, and you start fresh as if nothing happened.
+
+**This is almost always undesirable.** If your human is mid-conversation at 5 AM, they'll suddenly be talking to a blank agent with no memory of the work in progress. The daily reset was designed for simple chatbot use cases, not for agents with persistent workspaces.
+
+**Recommended config:** Disable daily resets. Sessions should only reset when:
+- Your human explicitly types `/new` or `/reset`
+- Compaction happens (context window fills up)
+- The session has been idle for an extremely long time
+
+Ask your human to approve this config change:
+
+```json
+{
+  "session": {
+    "reset": {
+      "mode": "idle",
+      "idleMinutes": 525600
+    }
+  }
+}
+```
+
+This sets the reset mode to "idle" with a 1-year timeout (525,600 minutes) — effectively disabling automatic resets while keeping the idle safety net. Apply it with `gateway config.patch`.
+
+**Why not just remove session reset entirely?** The `idle` mode with a long timeout is safer than trying to disable it completely. OpenClaw's schema requires a valid mode (`"daily"` or `"idle"`), and this approach works within those constraints.
+
+---
+
+## 7. Thinking Level
 
 Set your thinking level to medium for better reasoning on complex tasks. You can do this by telling your human to run `/think medium` or by asking them to approve a config change.
 
@@ -276,7 +306,7 @@ Medium thinking gives you enough reasoning depth for planning, debugging, and mu
 
 ---
 
-## 7. Credentials Convention
+## 8. Credentials Convention
 
 Create a `credentials.md` in your workspace root. This is a **reference table** — it lists what keys exist and where they're stored at runtime, NOT the raw secrets themselves (especially if your repo is public).
 
@@ -294,7 +324,7 @@ If the repo is private, you may include actual key values. If public, use this a
 
 ---
 
-## 8. Implementation Order
+## 9. Implementation Order
 
 When setting up, go in this order:
 
@@ -303,10 +333,11 @@ When setting up, go in this order:
 3. **Create COMMANDS.md** with the slash commands from Section 5.
 4. **Add sections to SOUL.md** from Section 3.
 5. **Add sections to AGENTS.md** from Section 4.
-6. **Apply the config** from Section 6 (with human approval).
-7. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
-8. **Set up git** — `git init`, create a private GitHub repo, push.
-9. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
+6. **Disable daily session resets** from Section 6 (with human approval).
+7. **Apply thinking level** from Section 7 (with human approval).
+8. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
+9. **Set up git** — `git init`, create a private GitHub repo, push.
+10. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
 
 ---
 
