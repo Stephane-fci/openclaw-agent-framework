@@ -382,12 +382,6 @@ These 7 skills have been tested and proven useful. Install the ones relevant to 
 **When to use:** When your human asks for a diagram, architecture map, or visual explanation. Also useful for presentations and documentation.
 **Requires:** Nothing — pure JSON generation, no API keys needed.
 
-#### youtube-thumbnail
-**What:** Create and edit YouTube thumbnails optimized for click-through rate.
-**Why:** Thumbnails are the #1 factor in YouTube CTR. This skill contains design principles, prompting guidelines, and references for creating effective thumbnails using image generation models.
-**When to use:** When creating or editing YouTube thumbnails. Best used through a dedicated sub-agent.
-**Requires:** Image generation capability (e.g., Gemini via nano-banana-pro skill).
-
 ### Setup & Configuration
 
 #### discord-setup
