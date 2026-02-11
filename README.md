@@ -19,6 +19,6 @@ Read `UPDATE-PROTOCOL.md`, then check for new commits or releases since your las
 | File | What it is |
 |------|-----------|
 | `FRAMEWORK.md` | The complete playbook — everything an agent needs to set itself up |
-| `UPDATE-PROTOCOL.md` | How to check for and apply updates safely. |
+| `UPDATE-PROTOCOL.md` | How to check for and apply updates safely |
 
-That's it. Two files plus this README.
+That's it. Two files plus this README. Skills, config, and workflow — all in one place.

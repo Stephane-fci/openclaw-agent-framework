@@ -306,7 +306,119 @@ Medium thinking gives you enough reasoning depth for planning, debugging, and mu
 
 ---
 
-## 8. Credentials Convention
+## 8. Recommended Skills
+
+OpenClaw skills are instruction files that teach you how to use specific tools. They live in `<workspace>/skills/` and are loaded automatically when their requirements are met.
+
+These 7 skills have been tested and proven useful. Install the ones relevant to your setup.
+
+### Core Research Stack
+
+#### web-search (Serper)
+**What:** Google search via the Serper API.
+**Why:** Faster, cheaper ($0.30/1K queries), and more reliable than the built-in Brave search. No rate limits. Returns real Google results including organic, news, images, knowledge graph, and "people also ask."
+**When to use:** Any time you need to look something up on the web. This should be your default search tool.
+**Requires:** `SERPER_API_KEY` — get one at [serper.dev](https://serper.dev)
+**Config:**
+```json
+{
+  "skills": {
+    "entries": {
+      "serper": {
+        "env": { "SERPER_API_KEY": "your-key-here" }
+      }
+    }
+  }
+}
+```
+
+#### grok-xai
+**What:** Twitter/X search and web search via xAI's Grok models.
+**Why:** Native X access — not scraping. Grok searches live X data and returns AI-synthesized results with real tweet URLs. The only reliable way to search Twitter from a server.
+**When to use:** Monitoring topics on X, tracking accounts, sentiment analysis, finding discussions about a brand or product.
+**Requires:** `XAI_API_KEY` — get one at [console.x.ai](https://console.x.ai)
+**Config:**
+```json
+{
+  "skills": {
+    "entries": {
+      "grok": {
+        "env": { "XAI_API_KEY": "your-key-here" }
+      }
+    }
+  }
+}
+```
+
+#### apify-research
+**What:** General-purpose connector to Apify's ecosystem of 4,000+ web scrapers ("actors").
+**Why:** Many platforms (Reddit, LinkedIn, Instagram, TikTok, Amazon) block direct access from server IPs. Apify runs browser automation in the cloud, bypassing these blocks. This is your only way to read full Reddit content from a server.
+**When to use:** Scraping Reddit threads, extracting LinkedIn profiles, Instagram posts, Amazon reviews — any platform that blocks direct access. Also useful for discovering new scraping tools via `search-actors`.
+**Requires:** `APIFY_TOKEN` + `mcporter` CLI — get a token at [apify.com](https://apify.com)
+**Config:**
+```json
+{
+  "skills": {
+    "entries": {
+      "apify-research": {
+        "env": { "APIFY_TOKEN": "your-token-here" }
+      }
+    }
+  }
+}
+```
+
+#### youtube-research
+**What:** Three atomic YouTube tools — video search, comment extraction, and transcript scraping.
+**Why:** YouTube comments are a goldmine for pain points, customer language, and market research. Transcripts let you analyze what top creators are saying. All via Apify actors with known costs.
+**When to use:** Market research, content ideas, competitor analysis, demand validation (high views = high demand).
+**Requires:** `APIFY_TOKEN` (same as apify-research)
+
+### Creative & Visual Tools
+
+#### excalidraw-json
+**What:** Create and edit Excalidraw diagrams programmatically by writing JSON.
+**Why:** Lets you generate architecture diagrams, flowcharts, wireframes, and system maps without a GUI. Includes reusable assets (hardware illustrations, architecture templates) and documented patterns for common diagram types.
+**When to use:** When your human asks for a diagram, architecture map, or visual explanation. Also useful for presentations and documentation.
+**Requires:** Nothing — pure JSON generation, no API keys needed.
+
+#### youtube-thumbnail
+**What:** Create and edit YouTube thumbnails optimized for click-through rate.
+**Why:** Thumbnails are the #1 factor in YouTube CTR. This skill contains design principles, prompting guidelines, and references for creating effective thumbnails using image generation models.
+**When to use:** When creating or editing YouTube thumbnails. Best used through a dedicated sub-agent.
+**Requires:** Image generation capability (e.g., Gemini via nano-banana-pro skill).
+
+### Setup & Configuration
+
+#### discord-setup
+**What:** Step-by-step guide for connecting a Discord bot to OpenClaw.
+**Why:** Discord is a common messaging surface for OpenClaw agents. This skill walks through bot creation, server invitation, token configuration, and troubleshooting — so you don't have to figure it out from scratch each time.
+**When to use:** Setting up a new Discord server connection or debugging Discord issues.
+**Requires:** A Discord bot token (created via [Discord Developer Portal](https://discord.com/developers/applications)).
+
+### How Skills Interact
+
+These skills are designed to be **atomic** — each does one thing well. They don't overlap. Here's how they fit together for research:
+
+```
+Discovery          →  Deep Extraction
+─────────────────────────────────────
+Serper (Google)    →  Find threads, articles, pages
+Grok (X/Twitter)   →  Find tweets, discussions, trends
+Apify              →  Read full Reddit content, scrape any blocked platform
+YouTube Research   →  Search videos, extract comments, get transcripts
+```
+
+**Research workflow example:**
+1. `web-search` → Find Reddit threads about a topic via `site:reddit.com`
+2. `apify-research` → Scrape the full content of those threads
+3. Synthesize findings
+
+**Important:** Serper finds Reddit threads via Google but **cannot read them** (403 blocked). Apify is the bridge between discovery and extraction.
+
+---
+
+## 9. Credentials Convention
 
 Create a `credentials.md` in your workspace root. This is a **reference table** — it lists what keys exist and where they're stored at runtime, NOT the raw secrets themselves (especially if your repo is public).
 
@@ -324,7 +436,7 @@ If the repo is private, you may include actual key values. If public, use this a
 
 ---
 
-## 9. Implementation Order
+## 10. Implementation Order
 
 When setting up, go in this order:
 
@@ -335,9 +447,10 @@ When setting up, go in this order:
 5. **Add sections to AGENTS.md** from Section 4.
 6. **Disable daily session resets** from Section 6 (with human approval).
 7. **Apply thinking level** from Section 7 (with human approval).
-8. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
-9. **Set up git** — `git init`, create a private GitHub repo, push.
-10. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
+8. **Install recommended skills** from Section 8 (at minimum: web-search).
+9. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
+10. **Set up git** — `git init`, create a private GitHub repo, push.
+11. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
 
 ---
 
