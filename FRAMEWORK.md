@@ -499,7 +499,273 @@ When an update is available and the human approves:
 
 ---
 
-## 11. Implementation Order
+## 11. Recommended Config Settings
+
+Beyond session reset (Section 6) and thinking level (Section 7), these config settings make a significant difference. They were discovered by auditing a freshly set up agent against a battle-tested one — the gaps were obvious.
+
+Apply all of these with `gateway config.patch` after human approval.
+
+### Context Pruning
+
+Prevents old cached content from bloating the context window in long sessions.
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "1h"
+      }
+    }
+  }
+}
+```
+
+Cached tool results and old message content older than 1 hour get pruned. This keeps long sessions manageable without losing recent context.
+
+### Heartbeat
+
+The heartbeat makes your agent proactive — it wakes up periodically, checks for stale work, reviews sessions, and reaches out if something needs attention. Without this, your agent only acts when spoken to.
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "heartbeat": {
+        "every": "1h",
+        "target": "<channel>",
+        "to": "<primary-channel-id>"
+      }
+    }
+  }
+}
+```
+
+- **`target`**: the messaging platform (e.g., `discord`, `telegram`)
+- **`to`**: the channel ID where the agent normally talks to its human
+- **`every`**: how often to poll (1 hour is a good default)
+
+The heartbeat only does something useful if you also have a `HEARTBEAT.md` in your workspace telling the agent what to check. Without it, the agent just acknowledges the heartbeat silently.
+
+**Basic HEARTBEAT.md template:**
+```markdown
+# HEARTBEAT.md
+
+1. Check `process list` for running/dead background sessions
+2. Scan projects for stale work (active but untouched for days)
+3. Check for unfinished conversations
+4. If something needs attention → message your human
+5. If nothing to report → reply HEARTBEAT_OK
+6. Auto-maintenance: commit uncommitted changes, clean up temp files
+```
+
+### Gateway TLS
+
+Enables HTTPS with auto-generated certificates for the local gateway.
+
+```json
+{
+  "gateway": {
+    "tls": {
+      "enabled": true,
+      "autoGenerate": true
+    }
+  }
+}
+```
+
+Low impact for local-only setups, but good practice — especially if you expose the Control UI or use Tailscale.
+
+### Discord Block Streaming
+
+If you use Discord, this prevents partial message flickering (messages updating character by character).
+
+```json
+{
+  "channels": {
+    "discord": {
+      "blockStreaming": true
+    }
+  }
+}
+```
+
+Messages appear complete instead of streaming in real-time. Cleaner experience for the human.
+
+---
+
+## 12. Emergency Recovery Document
+
+Create an `EMERGENCY-RECOVERY.md` at the root of your workspace. This is the one file that contains **everything** needed to restore the agent if it breaks — designed to be read by someone (or another agent) who has zero context.
+
+**What to include:**
+
+```markdown
+# Emergency Recovery
+
+## What This Agent Is
+- Name, purpose, who it serves
+- Messaging surfaces (Discord/Telegram/Slack channels)
+
+## VPS Access
+- IP address, SSH command, port, user
+- How to get in if SSH fails (console access via hosting provider)
+
+## Service Management
+- Start: `sudo systemctl start openclaw-<agent>`
+- Stop: `sudo systemctl stop openclaw-<agent>`
+- Restart: `sudo systemctl restart openclaw-<agent>`
+- Logs: `sudo journalctl -u openclaw-<agent> -f`
+
+## File Structure
+- Where the workspace lives
+- Where config lives (~/.openclaw/openclaw.json)
+- Where credentials are stored
+
+## Credentials Reference
+- List ALL API keys and tokens with their names and locations
+- (If the repo is private, include actual values. If public, reference locations only.)
+
+## Common Problems & Fixes
+- Agent not responding → check service, check logs
+- Auth expired → how to regenerate setup-token
+- Config crash → how to revert (backup file location)
+- Disk full → what to clean up
+
+## Full Restore from GitHub
+- git clone URL
+- Steps to rebuild from scratch
+- Config file template or backup location
+
+## Key People
+- Who to contact, who has access
+
+## Claude Code Backup (optional)
+- If the human uses Claude Code, include a CLAUDE.md template
+  they can paste into a project to let Claude Code SSH in and fix things
+```
+
+**Why this matters:** When your agent crashes at 2 AM, the human (or a backup agent) needs exactly one file to get things working again. No hunting through folders, no guessing passwords.
+
+---
+
+## 13. User Manual for Your Human
+
+After setup, create a plain-text manual explaining how to use the system. Your human shouldn't need to understand the technical details — just the commands and concepts.
+
+**What to cover (keep it short — one page max):**
+
+1. **The 4 essential commands:**
+   - `/save` — end of session, saves everything
+   - `/resume` — start of session, picks up where you left off
+   - `/checkpoint` — quick save mid-session (like Ctrl+S)
+   - `/mycommands` — shows all available commands
+
+2. **Context % (the number you'll see):**
+   - Under 50%: normal, keep working
+   - 50-70%: normal, no stress
+   - Over 70%: do /save soon
+   - Over 85%: definitely /save now
+
+3. **How sessions work:**
+   - Agent forgets between sessions (like a new conversation)
+   - /save at the end preserves everything
+   - /resume at the start brings it all back
+   - Copy the resume prompt somewhere safe (note app, message to self)
+
+4. **How projects work:**
+   - `/projects` shows all projects with status
+   - Say "let's work on X" to focus on a project
+   - `/idea` captures ideas for later
+
+5. **What the agent does automatically:**
+   - List any cron jobs (morning briefing, weekly checks, etc.)
+   - Heartbeat checks (if configured)
+
+6. **If the agent seems confused:**
+   - Type `/resume` — it recovers from files
+   - If that doesn't work, type `/new` for a fresh session, then `/resume`
+
+**Format:** Write it in the style your human prefers (plain text for WhatsApp, markdown for Discord, etc.). Keep it scannable — no walls of text.
+
+---
+
+## 14. Post-Setup Audit Checklist
+
+After setting everything up, run this audit to catch gaps. You can do this yourself or spawn an independent sub-agent to check.
+
+### File Consistency
+- [ ] Every project in `projects/` has both `AGENT.md` and `ROADMAP.md`
+- [ ] Every project referenced in `MEMORY.md` actually exists in `projects/`
+- [ ] `COMMANDS.md` matches what `AGENTS.md` describes
+- [ ] All cron job references point to existing files/scripts
+- [ ] `credentials.md` lists every API key in the config
+
+### Cross-References
+- [ ] `AGENTS.md` boot sequence mentions all files that exist
+- [ ] Projects referenced in `MEMORY.md` match actual project folders
+- [ ] Slash commands in `COMMANDS.md` match the list in `AGENTS.md`
+
+### Config Validation
+- [ ] `openclaw.json` is valid JSON (gateway config.get returns no errors)
+- [ ] Auth works (agent can respond to messages)
+- [ ] Service is running and healthy (`systemctl status`)
+- [ ] Model is correct (`/status` shows expected model)
+
+### Infrastructure
+- [ ] Git repo exists and is pushed to GitHub
+- [ ] `projects/_template/` exists (for `/create` command)
+- [ ] `projects_archived/` exists (for `/close` command)
+- [ ] `TASKS.md` exists (for `/task` command)
+- [ ] `meetings/INDEX.md` exists (for `/meeting` command)
+
+### Config Completeness
+- [ ] Session reset configured (Section 6)
+- [ ] Thinking level set (Section 7)
+- [ ] Context pruning enabled (Section 11)
+- [ ] Heartbeat configured with HEARTBEAT.md (Section 11)
+- [ ] Gateway TLS enabled (Section 11)
+- [ ] Weekly update checker cron active (Section 10)
+
+### Quick Smoke Test
+- [ ] Type `/mycommands` — all commands listed
+- [ ] Type `/save` — saves without errors, generates resume prompt
+- [ ] Type `/resume` — recovers context from files
+- [ ] Check context % — displays correctly
+- [ ] Trigger heartbeat — agent responds appropriately
+
+**Tip:** Spawn an independent sub-agent for the audit. Give it SSH access to the VPS and the full checklist. A fresh agent with no context catches things you'll miss.
+
+---
+
+## 15. Config Audit Pattern
+
+When maintaining multiple agents, periodically compare each agent's config against your reference setup. The pattern:
+
+1. **Export both configs** — the agent's `openclaw.json` and your reference (or another agent's)
+2. **Compare category by category:**
+   - Model settings (primary, fallbacks, context tokens)
+   - Compaction settings
+   - Memory search (provider, model)
+   - Context pruning
+   - Thinking level
+   - Heartbeat
+   - Session reset
+   - Gateway settings (TLS, auth, control UI)
+   - Channel settings (streaming, policies)
+   - Skills and environment variables
+3. **Classify each difference:**
+   - ✅ Already good (matches or intentionally different)
+   - 🔴 Missing (should be there, isn't)
+   - 🟡 Different (works but could be better)
+4. **Apply fixes** with human approval, one at a time
+
+This is how you catch drift — agents that were set up months ago gradually fall behind as you learn new best practices. A quarterly config audit keeps everything aligned.
+
+---
+
+## 16. Implementation Order
 
 When setting up, go in this order:
 
@@ -509,13 +775,15 @@ When setting up, go in this order:
 4. **Create COMMANDS.md** with the slash commands from Section 5.
 5. **Add sections to SOUL.md** from Section 3.
 6. **Add sections to AGENTS.md** from Section 4.
-7. **Disable daily session resets** from Section 6 (with human approval).
-8. **Apply thinking level** from Section 7 (with human approval).
-9. **Install recommended skills** from Section 8 (at minimum: web-search).
-10. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
-11. **Set up git** — `git init`, create a private GitHub repo, push.
-12. **Set up the weekly update checker cron** from Section 10.
-13. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
+7. **Apply config settings** — session reset (Section 6), thinking (Section 7), context pruning + heartbeat + TLS (Section 11). All with human approval.
+8. **Install recommended skills** from Section 8 (at minimum: web-search).
+9. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
+10. **Set up git** — `git init`, create a private GitHub repo, push.
+11. **Set up the weekly update checker cron** from Section 10.
+12. **Create EMERGENCY-RECOVERY.md** (Section 12).
+13. **Create a user manual for your human** (Section 13).
+14. **Run the post-setup audit** (Section 14).
+15. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
 
 ---
 
