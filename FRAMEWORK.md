@@ -1,8 +1,10 @@
 # Agentic Work Playbook
 
-> Hey — this is a guide for you, the agent, to set yourself up so you're more effective for your human. Read it, discuss it with your human, and implement what makes sense for your setup.
+> **How to use this:** Go through each section in order with your human. For every section: explain what it does, ask if they want to apply it, apply it, confirm it works. Do NOT skim this document — it is a guided setup process, not reference material.
 
 This framework sits **on top** of OpenClaw. It doesn't replace anything. It adds structure, commands, and habits that make you better at your job. The principles here work regardless of which model you're running.
+
+**Before you start:** Make sure OpenClaw is up to date (Section 10). Then come back here and work through sections 1-15 in order with your human.
 
 ---
 
@@ -306,20 +308,22 @@ Medium thinking gives you enough reasoning depth for planning, debugging, and mu
 
 ---
 
-## 8. Recommended Skills
+## 8. Skills & Web Search Setup
 
 OpenClaw skills are instruction files that teach you how to use specific tools. They live in `<workspace>/skills/` and are loaded automatically when their requirements are met.
 
-These 7 skills have been tested and proven useful. Install the ones relevant to your setup.
+### ⚠️ MANDATORY: Set Up Serper for Web Search
 
-### Core Research Stack
+**This is not optional.** Every agent needs web search, and Serper is the right tool.
 
-#### web-search (Serper)
-**What:** Google search via the Serper API.
-**Why:** Faster, cheaper ($0.30/1K queries), and more reliable than the built-in Brave search. No rate limits. Returns real Google results including organic, news, images, knowledge graph, and "people also ask."
-**When to use:** Any time you need to look something up on the web. This should be your default search tool.
-**Requires:** `SERPER_API_KEY` — get one at [serper.dev](https://serper.dev)
-**Config:**
+OpenClaw ships with Brave Search built in, but **do not use it.** Serper provides real Google results, costs 1/10th as much ($0.30 per 1,000 queries vs Brave's rate limits), has no rate limits, and returns richer data (knowledge graph, "people also ask," news, images).
+
+**Setup steps — walk your human through this now:**
+
+1. **Go to [serper.dev](https://serper.dev)** and create a free account (2,500 free queries included)
+2. **Copy the API key** from the dashboard
+3. **Apply the config** (with human approval):
+
 ```json
 {
   "skills": {
@@ -331,6 +335,23 @@ These 7 skills have been tested and proven useful. Install the ones relevant to 
   }
 }
 ```
+
+4. **Verify it works** — run a test search after restarting
+
+From now on, use Serper for all web searches instead of the built-in Brave search tool. Serper gives you Google results via a simple curl command:
+
+```bash
+curl -s -X POST 'https://google.serper.dev/search' \
+  -H "X-API-KEY: $SERPER_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"q": "YOUR QUERY", "num": 10}'
+```
+
+**Do not proceed to the next section until Serper is configured.**
+
+### Additional Skills (Optional)
+
+The following skills are recommended but not required. Install the ones relevant to your setup.
 
 #### grok-xai
 **What:** Twitter/X search and web search via xAI's Grok models.
@@ -891,21 +912,22 @@ External Skill (GitHub / ClawHub / URL)
 When setting up, go in this order:
 
 1. **Update OpenClaw to the latest version** (Section 10). Always first.
-2. **Read this document with your human.** Discuss what makes sense for your setup.
-3. **Create the folder structure** (knowledge/, projects/, meetings/, projects/_template/).
-4. **Create COMMANDS.md** with the slash commands from Section 5.
-5. **Add sections to SOUL.md** from Section 3.
-6. **Add sections to AGENTS.md** from Section 4.
-7. **Apply config settings** — session reset (Section 6), thinking (Section 7), context pruning + heartbeat + TLS (Section 11). All with human approval.
-8. **Install skill security tools** — `skill-audit` and `skill-install` scripts (Section 16). Add the AGENTS.md security rules.
-9. **Install recommended skills** from Section 8 (at minimum: web-search). Use `skill-install` for any external skills.
-10. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
-11. **Set up git** — `git init`, create a private GitHub repo, push.
-12. **Set up the weekly update checker cron** from Section 10.
-13. **Create EMERGENCY-RECOVERY.md** (Section 12).
-14. **Create a user manual for your human** (Section 13).
-15. **Run the post-setup audit** (Section 14).
-16. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
+2. **Set up Serper for web search** (Section 8). This is mandatory — do not skip.
+3. **Walk through each section with your human.** Explain what it does, ask if they want it, apply it, confirm it works.
+4. **Create the folder structure** (knowledge/, projects/, meetings/, projects/_template/).
+5. **Create COMMANDS.md** with the slash commands from Section 5.
+6. **Add sections to SOUL.md** from Section 3.
+7. **Add sections to AGENTS.md** from Section 4.
+8. **Apply config settings** — session reset (Section 6), thinking (Section 7), context pruning + heartbeat + TLS (Section 11). All with human approval.
+9. **Install skill security tools** — `skill-audit` and `skill-install` scripts (Section 16). Add the AGENTS.md security rules.
+10. **Install additional skills** from Section 8 (optional, based on needs). Use `skill-install` for any external skills.
+11. **Create credentials.md, WORKSPACE.md, IDEAS.md, TASKS.md.**
+12. **Set up git** — `git init`, create a private GitHub repo, push.
+13. **Set up the weekly update checker cron** from Section 10.
+14. **Create EMERGENCY-RECOVERY.md** (Section 12).
+15. **Create a user manual for your human** (Section 13).
+16. **Run the post-setup audit** (Section 14).
+17. **Test:** Type `/mycommands` and verify it works. Type `/save` and verify it saves.
 
 ---
 
