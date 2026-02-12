@@ -376,10 +376,16 @@ These 7 skills have been tested and proven useful. Install the ones relevant to 
 
 ### Creative & Visual Tools
 
+#### pil-diagrams ⭐ NEW
+**What:** Generate visual diagrams (flowcharts, architecture, workflows, comparisons) as PNG images using Python PIL/Pillow.
+**Why:** Creates professional diagrams without a browser or external tools. Generates PNGs that can be sent directly via Discord/Telegram/etc. Humans strongly prefer visual explanations over text walls.
+**When to use:** Whenever you need to explain a workflow, architecture, comparison, timeline, or any spatial concept. Default to this over text-based diagrams.
+**Requires:** Python + Pillow (`pip install Pillow`, usually pre-installed). Includes `render.py` helper with reusable drawing functions.
+
 #### excalidraw-json
 **What:** Create and edit Excalidraw diagrams programmatically by writing JSON.
 **Why:** Lets you generate architecture diagrams, flowcharts, wireframes, and system maps without a GUI. Includes reusable assets (hardware illustrations, architecture templates) and documented patterns for common diagram types.
-**When to use:** When your human asks for a diagram, architecture map, or visual explanation. Also useful for presentations and documentation.
+**When to use:** When your human asks for a diagram, architecture map, or visual explanation. Also useful for presentations and documentation. Note: requires browser to render to image — prefer `pil-diagrams` when you need a PNG without a browser.
 **Requires:** Nothing — pure JSON generation, no API keys needed.
 
 ### Setup & Configuration

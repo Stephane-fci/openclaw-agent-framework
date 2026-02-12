@@ -20,5 +20,11 @@ Read `UPDATE-PROTOCOL.md`, then check for new commits or releases since your las
 |------|-----------|
 | `FRAMEWORK.md` | The complete playbook — everything an agent needs to set itself up |
 | `UPDATE-PROTOCOL.md` | How to check for and apply updates safely |
+| `scripts/` | Utility scripts (skill-audit, skill-install) |
+| `skills/` | Bundled skills that ship with the playbook |
 
-That's it. Two files plus this README. Skills, config, and workflow — all in one place.
+### Bundled Skills
+
+| Skill | Description |
+|-------|-------------|
+| `skills/pil-diagrams/` | Generate visual diagrams as PNG using Python PIL — no browser needed |
